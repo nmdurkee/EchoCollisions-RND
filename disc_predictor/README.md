@@ -1,10 +1,38 @@
 # EchoVRCollisionRND — Echo VR disc bounce prediction
 
-Reverse-engineering notes, extracted game data, and (soon) a Python engine that
+Reverse-engineering notes, extracted game data, and a Python engine that
 predicts where the Echo VR disc will go over the next 2 seconds — every wall bounce
 included — from the live `/session` API, using the game's **real collision mesh**
 and **real bounce physics** instead of replay-viewer assets. Built to feed an
 in-headset overlay.
+
+## Status (2026-09-05)
+
+The engine is built and running in the headset. It lives in `..\DiscTracer\`
+alongside the overlay that consumes it rather than under `disc_predictor\` --
+the overlay imports it directly, and keeping the two together is what makes
+`test_live_3d_trajectory.py` runnable as-is.
+
+Measured on the 24 logged bounces in the overlay's corpus, of which 5 were
+player catch-and-throws (the disc *gained* speed, which restitution <= 1
+forbids), leaving 19 real wall bounces: correct surface 14/19 against the old
+FBX model's 12/19, and outgoing velocity exact in 13/19 -- which the old model
+could not do at all. Measured normal restitution 0.500 against the documented
+0.500, so the constants in `ECHOVR_BOUNCE_NOTES.md` 3b are confirmed live. The
+old model reflected without energy loss; real bounces retain a median 0.51 of
+speed, so its post-bounce segments were about twice as long as they should be.
+
+The open "which of hulls 0/2/4" question is answered: **all nine bodies**, which
+beat every subset with no extra phantom hits.
+
+- [x] `echo_disc_predict/` -- the engine (in `..\DiscTracer\echo_disc_predict\`)
+- [x] `validate_bounces.py` -- validation harness; also settled the hull question
+- [x] Integration with the in-headset overlay -- live, `USE_REAL_COLLISION = True`
+- [ ] Ring collider still unvalidated: the corpus predates `disc.up` logging, so
+      every number above is point-mode. `detect_real_bounces.py` now logs it.
+- [ ] Edge-edge contact phase not implemented
+- [ ] `tools/echovr_pkg.py` -- since written, but as part of the geo-removal
+      work and not in this repo
 
 ## Status (2026-09-04)
 
