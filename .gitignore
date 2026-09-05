@@ -1,0 +1,16 @@
+# Secrets / local machine config - never commit
+.mcp.json
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Build artifacts (compiled binaries only - .obj is used for extracted mesh data in this repo)
+*.exe
+*.pdb
+
+# Editor/OS
+.DS_Store
+Thumbs.db
